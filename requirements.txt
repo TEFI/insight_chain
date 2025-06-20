@@ -1,0 +1,5 @@
+langchain==0.3.25
+langgraph==0.4.8
+langchain-community==0.3.25
+google-genai==1.20.0
+Jinja2==3.1.6
