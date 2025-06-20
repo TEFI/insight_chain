@@ -1,0 +1,34 @@
+# ⚙️ Python virtual environments
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.so
+
+# 🧪 Jupyter and VS Code artifacts
+.ipynb_checkpoints/
+*.ipynb
+.vscode/
+
+# 🧼 System or editor-specific files
+.DS_Store
+*.log
+*.env
+*.bak
+utils/parser.py
+
+# 🧪 Test and scratch files
+*.tmp
+*.old
+
+# ⚙️ Intermediate outputs (from LLM or PDF processing)
+papers/*
+!papers/.gitkeep
+promtsprompts/*
+!prompts/.gitkeep
+
+# 🧠 ML model weights or caches
+*.pth
+*.pt
+*.bin
+*.h5
