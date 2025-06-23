@@ -1,7 +1,7 @@
 from state.dialogue_state import DialogueState
 from .base import BaseAgent
 from jinja2 import Environment, FileSystemLoader
-from evopromptfx.evaluators.bert_score import compute_bertscore
+from evopromptfx.metrics.bert_score import compute_bertscore
 
 import logging
 from transformers import logging as hf_logging
