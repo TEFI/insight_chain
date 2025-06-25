@@ -36,6 +36,7 @@ class AgentData(BaseModel):
     name: str
     question: Optional[str] = None
     answer: Optional[str] = None
+    prompt: Optional[str] = None
 
 
 # Represents the global dialogue state across graph execution

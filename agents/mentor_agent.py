@@ -1,50 +1,40 @@
 from jinja2 import Environment, FileSystemLoader
-
 from state.dialogue_state import DialogueState
 from .base import BaseAgent
 
 class MentorAgent(BaseAgent):
     def __init__(self):
         super().__init__(temperature=0.8, top_p=0.95)
+        env = Environment(loader=FileSystemLoader("prompts"))
+        self.templates = {
+            "main": env.get_template("mentor_prompt_template.jinja2"),
+            "analogy": env.get_template("mentor_analogy_prompt_template.jinja2")
+        }
 
-        # Start jinja enviroment
-        self.env = Environment(loader=FileSystemLoader("prompts"))
+    def __build_context(self, state: DialogueState) -> dict:
+        return {
+            "student_name": state.student.name,
+            "mentor_name": state.mentor.name,
+            "document_title": state.document_title,
+            "context": state.context,
+            "section": state.section,
+            "student_question": state.student.question,
+        }
 
-        # load promt templates
-        self.prompt_template = self.env.get_template("mentor_prompt_template.jinja2")
-        self.analogy_template = self.env.get_template("mentor_analogy_prompt_template.jinja2")
+    def __render_prompt(self, template_key: str, **extra_fields) -> tuple[str, str]:
+        base_context = extra_fields.pop("base_context")
+        full_context = {**base_context, **extra_fields}
+        prompt = self.templates[template_key].render(full_context)
+        return self.run(prompt), prompt
 
-    def __answer_analogy(self, context, section, student_name, mentor_name, document_title, student_question):
-        rendered_prompt = self.analogy_template.render(
-            student_name=student_name,
-            mentor_name=mentor_name,
-            document_title=document_title,
-            context=context,
-            section=section,
-            student_question=student_question
-        )
-        return self.run(rendered_prompt)
+    def answer_question(self, state: DialogueState) -> str:
+        context = self.__build_context(state)
 
-    def answer_question(self,  state: DialogueState) -> str:
-        section = state.section
-        context = state.context
-        mentor_name = state.mentor.name
-        student_name = state.student.name
-        document_title = state.document_title
-        student_question = state.student.question
+        if state.section == state.section_list[0]:
+            response, prompt = self.__render_prompt("analogy", base_context=context)
+        else:
+            memory_text = state.get_memory_as_text()
+            response, prompt = self.__render_prompt("main", base_context=context, memory=memory_text)
 
-        if section == state.section_list[0]: 
-            return self.__answer_analogy(context, section, student_name, mentor_name, document_title, student_question)
-
-        memory_text = state.get_memory_as_text()
-
-        rendered_prompt = self.prompt_template.render(
-            student_name=student_name,
-            section=section,
-            mentor_name=mentor_name,
-            context=context,
-            student_question=student_question,
-            memory=memory_text
-        )
-
-        return self.run(rendered_prompt)
+        state.mentor.prompt = prompt
+        return response

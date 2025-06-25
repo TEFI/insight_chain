@@ -1,33 +1,25 @@
 from state.dialogue_state import DialogueState
 from .base import BaseAgent
-from jinja2 import Environment, FileSystemLoader
-from evopromptfx.metrics.bert_score import compute_bertscore
-
-import logging
-from transformers import logging as hf_logging
+from config import GEMINI_API_KEY
+from evopromptfx.core.judges.gemini_judge import GeminiJudge
 
 class EvaluatorAgent(BaseAgent):
-    def __init__(self, suppress_warnings=True):
-        super().__init__(temperature=0.8, top_p=0.95)
-        
-        if suppress_warnings:
-            logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
-            hf_logging.set_verbosity_error()
-        
-
-        # Start jinja enviroment
-        # self.env = Environment(loader=FileSystemLoader("prompts"))
-
-        # load promt templates
-        # self.state_template = self.env.get_template("state_prompt_template.jinja2")
-
-
+    def __init__(self):
+        super().__init__()
+        self.llm_as_judge = GeminiJudge(api_key=GEMINI_API_KEY)
     def evaluate(self,  state: DialogueState) -> float:
 
         if state.last_node == "student_node":
             llm_response = state.student.question
+            prompt = state.student.prompt
         else:
             llm_response = state.mentor.answer
+            prompt = state.mentor.prompt
 
-        score = compute_bertscore(state.context, llm_response)
-        return score
+        score = self.llm_as_judge.evaluate(
+            prompt=prompt,
+            answer=llm_response
+        )
+
+        return score["average"]
+

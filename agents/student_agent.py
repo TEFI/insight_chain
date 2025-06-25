@@ -5,43 +5,40 @@ from jinja2 import Environment, FileSystemLoader
 class StudentAgent(BaseAgent):
     def __init__(self):
         super().__init__(temperature=0.8, top_p=0.95)
+        env = Environment(loader=FileSystemLoader("prompts"))
+        self.templates = {
+            "main": env.get_template("student_prompt_template.jinja2"),
+            "analogy": env.get_template("student_analogy_prompt_template.jinja2")
+        }
 
-        # Initialize Jinja2 environment
-        self.env = Environment(loader=FileSystemLoader("prompts"))
+    def __build_context(self, state: DialogueState) -> dict:
+        return {
+            "student_name": state.student.name,
+            "mentor_name": state.mentor.name,
+            "section": state.section,
+            "context": state.context
+        }
 
-        # Load prompt templates
-        self.prompt_template = self.env.get_template("student_prompt_template.jinja2")
-        self.analogy_template = self.env.get_template("student_analogy_prompt_template.jinja2")
-
-    def __generate_analogy(self, context: str, section: str, student_name: str, mentor_name: str) -> str:
-        rendered_prompt = self.analogy_template.render(
-            student_name=student_name,
-            context=context,
-            tokens=str(int(len(context) * 0.1)),
-            section=section,
-            mentor_name=mentor_name
-        )
-        return self.run(rendered_prompt)
+    def __render_prompt(self, template_key: str, **extra_fields) -> tuple[str, str]:
+        base_context = extra_fields.pop("base_context")
+        full_context = {**base_context, **extra_fields}
+        rendered_prompt = self.templates[template_key].render(full_context)
+        return self.run(rendered_prompt), rendered_prompt
 
     def generate_question(self, state: DialogueState) -> str:
-        section = state.section
-        context = state.context
-        mentor_name = state.mentor.name
-        student_name = state.student.name
+        context = self.__build_context(state)
 
-        if section == state.section_list[0]:  # first section
-            return self.__generate_analogy(context, section, student_name, mentor_name)
+        if state.section == state.section_list[0]:
+            token_estimate = str(int(len(state.context) * 0.1))
+            response, rendered_prompt = self.__render_prompt("analogy", base_context=context, tokens=token_estimate)
+        else:
+            memory_text = state.get_memory_as_text()
+            response, rendered_prompt = self.__render_prompt(
+                "main",
+                base_context=context,
+                memory=memory_text,
+                mentor_answer=state.mentor.answer
+            )
 
-        memory_text = state.get_memory_as_text()
-        mentor_answer = state.mentor.answer
-
-        rendered_prompt = self.prompt_template.render(
-            student_name=student_name,
-            section=section,
-            mentor_name=mentor_name,
-            context=context,
-            mentor_answer=mentor_answer,
-            memory=memory_text
-        )
-
-        return self.run(rendered_prompt)
+        state.student.prompt = rendered_prompt
+        return response
