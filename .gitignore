@@ -20,6 +20,8 @@ utils/parser.py
 # 🧪 Test and scratch files
 *.tmp
 *.old
+evopromptfx.db
+
 
 # ⚙️ Intermediate outputs (from LLM or PDF processing)
 papers/*
