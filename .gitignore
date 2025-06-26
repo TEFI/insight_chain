@@ -15,22 +15,25 @@ __pycache__/
 *.log
 *.env
 *.bak
+
+# 🔧 Ignore specific local utility files
 utils/parser.py
+evopromptfx.db
 
 # 🧪 Test and scratch files
 *.tmp
 *.old
-evopromptfx.db
-
 
 # ⚙️ Intermediate outputs (from LLM or PDF processing)
 papers/*
 !papers/.gitkeep
-promtsprompts/*
-!prompts/.gitkeep
 
 # 🧠 ML model weights or caches
 *.pth
 *.pt
 *.bin
 *.h5
+
+# 🧼 Ignore everything in prompts except .gitkeep
+prompts/*
+!prompts/.gitkeep
