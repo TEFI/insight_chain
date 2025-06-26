@@ -13,6 +13,7 @@ class BaseAgent:
 
         self.temperature = temperature
         self.top_p = top_p
+        self.model_name = model_name
 
         # 🧠 Initialize the selected Gemini model
         self.model = GenerativeModel(model_name)
