@@ -20,7 +20,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--doc",
         type=Path,
-        required=True
+        #required=True
+        default=Path("papers/zero/zero.md")
         
     )
     args = parser.parse_args()
@@ -54,4 +55,3 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"❌ Error during graph invocation: {e}")
             break
-        break

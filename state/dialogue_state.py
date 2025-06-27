@@ -56,7 +56,7 @@ class DialogueState(BaseModel):
     memory: Memory = Field(default_factory=Memory)
     context: Optional[str] = None
     section: Optional[str] = None
-
+    section_follow_up: list[str] = Field(default_factory=list)
     # Add a completed dialogue turn to memory
     def add_turn(self, question: str, answer: str) -> None:
         self.memory.add(question, answer)
