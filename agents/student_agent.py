@@ -59,6 +59,8 @@ class StudentAgent(BaseAgent):
             template_key = "main"
             context["memory"] = state.get_memory_as_text()
             context["mentor_answer"] = state.mentor.answer
+            context["key_points"] = "\n\n".join(state.section_follow_up)
+            context["actual_point"] = state.section_follow_up[0]
 
         # Render and generate question
         response, rendered_prompt = self.__render_prompt(template_key, base_context=context)

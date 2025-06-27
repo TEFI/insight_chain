@@ -58,6 +58,8 @@ class MentorAgent(BaseAgent):
         template_key = "analogy" if state.section == state.section_list[0] else "main"
         if template_key == "main":
             context["memory"] = state.get_memory_as_text()
+            context["key_points"] = "\n\n".join(state.section_follow_up)
+            context["actual_point"] = state.section_follow_up[0]
 
         response, rendered_prompt = self.__render_prompt(template_key, base_context=context)
 

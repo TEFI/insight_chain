@@ -7,6 +7,6 @@ state_agent = StateAgent()
 # Node function to update the current dialogue state
 def update_state_node(state: DialogueState) -> DialogueState:
     # Delegate the update logic to the state agent
-    state_agent.update_state(state)
+    state = state_agent.update_state(state)
     # Return the (mutated) state object
     return state

@@ -49,8 +49,7 @@ if __name__ == "__main__":
             state = ensure_dialogue_state(raw_output)
 
             print(f"{state.student.name}: {state.student.question}\n\n")
-            print(f"{state.mentor.name}: {state.mentor.answer}")
-            print("\n" + "-" * 50 + "\n")
+            print(f"{state.mentor.name}: {state.mentor.answer}\n\n")
 
         except Exception as e:
             print(f"❌ Error during graph invocation: {e}")

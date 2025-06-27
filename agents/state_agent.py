@@ -16,7 +16,7 @@ class StateAgent(BaseAgent):
 
     def update_state(self, state: DialogueState) -> None:
 
-        if not state.section_follow_up:
+        if len(state.section_follow_up) < 2:
             state.section_index  += 1
             state.section = state.section_list[state.section_index]
 
@@ -35,4 +35,6 @@ class StateAgent(BaseAgent):
                 for d in section_data
             ]
             state.section_follow_up = section_follow_up
+        else:
+            state.section_follow_up.pop(0)
 
