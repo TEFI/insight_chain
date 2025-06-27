@@ -30,10 +30,7 @@ class StateAgent(BaseAgent):
             response = self.run(rendered_prompt)
             section_data = json.loads(response)
 
-            section_follow_up = [
-                f"**{list(d.values())[0]}**:\n{list(d.values())[0]}"
-                for d in section_data
-            ]
+            section_follow_up = [f"{item['key']}\n{item['explanation']}" for item in section_data]
             state.section_follow_up = section_follow_up
         else:
             state.section_follow_up.pop(0)
