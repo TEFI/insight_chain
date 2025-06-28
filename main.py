@@ -43,7 +43,7 @@ if __name__ == "__main__":
     graph = build_graph()
 
     # Run the graph iteratively through the document sections
-    while state.section_index < len(state.section_list) - 1:
+    while (state.section_index < len(state.section_list)) and state.section_follow_up:
         try:
             raw_output = graph.invoke(state)
             state = ensure_dialogue_state(raw_output)
