@@ -16,8 +16,9 @@ class StudentAgent(BaseAgent):
         # Setup Jinja2 environment and templates
         env = Environment(loader=FileSystemLoader("prompts"))
         self.templates = {
+            "analogy": TemplateWithSource("student_analogy_prompt_template.jinja2", env, 1),
             "main": TemplateWithSource("student_prompt_template.jinja2", env, 1),
-            "analogy": TemplateWithSource("student_analogy_prompt_template.jinja2", env, 1)
+            "conclusion": TemplateWithSource("student_conclusion_prompt_template.jinja2", env, 1),
         }
 
         # Setup DB session and tracker
@@ -56,7 +57,7 @@ class StudentAgent(BaseAgent):
             token_estimate = str(int(len(state.context) * 0.1))
             context["tokens"] = token_estimate
         else:
-            template_key = "main"
+            template_key = "conclusion" if state.section == state.section_list[-1] else "main"
             context["memory"] = state.get_memory_as_text()
             context["mentor_answer"] = state.mentor.answer
             context["key_points"] = "\n\n".join(state.section_follow_up)

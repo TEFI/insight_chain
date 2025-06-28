@@ -16,8 +16,7 @@ class StateAgent(BaseAgent):
 
     def update_state(self, state: DialogueState) -> None:
 
-        if state.section_index < len(state.section_list) - 1:
-            if len(state.section_follow_up) < 2:
+        if state.section_index < len(state.section_list) - 1 and len(state.section_follow_up) < 2:
                 state.section_index  += 1
                 state.section = state.section_list[state.section_index]
 
@@ -33,6 +32,6 @@ class StateAgent(BaseAgent):
 
                 section_follow_up = [f"{item['key']}\n{item['explanation']}" for item in section_data]
                 state.section_follow_up = section_follow_up
-            else:
-                state.section_follow_up.pop(0)
+        else:
+            state.section_follow_up.pop(0)
 

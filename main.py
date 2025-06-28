@@ -42,8 +42,10 @@ if __name__ == "__main__":
     # Build the multi-agent reasoning graph
     graph = build_graph()
 
+    start = True
+
     # Run the graph iteratively through the document sections
-    while (state.section_index < len(state.section_list)) and state.section_follow_up:
+    while (state.section_index < len(state.section_list)) and (state.section_follow_up or start):
         try:
             raw_output = graph.invoke(state)
             state = ensure_dialogue_state(raw_output)
@@ -54,3 +56,4 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"❌ Error during graph invocation: {e}")
             break
+        start = False

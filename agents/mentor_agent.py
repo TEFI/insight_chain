@@ -16,8 +16,9 @@ class MentorAgent(BaseAgent):
         # Load prompt templates
         env = Environment(loader=FileSystemLoader("prompts"))
         self.templates = {
-            "main": TemplateWithSource("mentor_prompt_template.jinja2", env, 1),
             "analogy": TemplateWithSource("mentor_analogy_prompt_template.jinja2", env, 1),
+            "main": TemplateWithSource("mentor_prompt_template.jinja2", env, 1),
+            "conclusion": TemplateWithSource("mentor_conclusion_prompt_template.jinja2", env, 1),
         }
 
         # Setup DB connection and prompt tracker
@@ -57,6 +58,8 @@ class MentorAgent(BaseAgent):
 
         template_key = "analogy" if state.section == state.section_list[0] else "main"
         if template_key == "main":
+            if state.section == state.section_list[-1]:
+                template_key = "conclusion"
             context["memory"] = state.get_memory_as_text()
             context["key_points"] = "\n\n".join(state.section_follow_up)
             context["actual_point"] = state.section_follow_up[0]
