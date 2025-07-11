@@ -20,8 +20,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--doc",
         type=Path,
-        #required=True
-        default=Path("papers/zero/zero.md")
+        required=True
         
     )
     args = parser.parse_args()
